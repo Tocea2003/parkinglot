@@ -1,3 +1,4 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%--
   Created by IntelliJ IDEA.
   User: crist
@@ -15,18 +16,29 @@
             <div class="collapse navbar-collapse" id="navbarCollapse">
                 <ul class="navbar-nav me-auto mb-2 mb-md-0">
                     <li class="nav-item">
-                        <a class="nav-link ${pageContext.request.requestURI.substring(pageContext.request.requestURI.lastIndexOf("/")) == '/about.jsp' ? ' active' : ''}" aria-current="page" href="${pageContext.request.contextPath}/about.jsp">About</a>
+                        <a class="nav-link ${pageContext.request.requestURI.substring(pageContext.request.requestURI.lastIndexOf('/')) == '/about.jsp' ? ' active' : ''}" aria-current="page" href="${pageContext.request.contextPath}/about.jsp">About</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link ${activePage == 'Cars' ? 'active' : ''}" aria-current="page" href="${pageContext.request.contextPath}/Cars">Cars</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link ${activePage == 'Users' ? 'active' : ''}" aria-current="page" href="${pageContext.request.contextPath}/Users">Users</a>
-                    </li>
+                    <c:if test="${pageContext.request.remoteUser != null}">
+                        <li class="nav-item">
+                            <c:if test="${pageContext.request.isUserInRole('READ_CARS')}">
+                                <a class="nav-link ${activePage == 'Cars' ? 'active' : ''}" aria-current="page" href="${pageContext.request.contextPath}/Cars">Cars</a>
+                            </c:if>
+                        </li>
+                        <li class="nav-item">
+                            <c:if test="${pageContext.request.isUserInRole('READ_USERS')}">
+                                <a class="nav-link ${activePage == 'Users' ? 'active' : ''}" aria-current="page" href="${pageContext.request.contextPath}/Users">Users</a>
+                            </c:if>
+                        </li>
+                    </c:if>
                 </ul>
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link" href="${pageContext.request.contextPath}/Login">Login</a>
+                        <c:if test="${pageContext.request.remoteUser != null}">
+                            <a class="nav-link" href="${pageContext.request.contextPath}/Logout">Logout</a>
+                        </c:if>
+                        <c:if test="${pageContext.request.remoteUser == null}">
+                            <a class="nav-link" href="${pageContext.request.contextPath}/Login">Login</a>
+                        </c:if>
                     </li>
                 </ul>
             </div>
