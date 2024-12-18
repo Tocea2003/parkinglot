@@ -21,11 +21,12 @@
           <div class="col">
               ${car.ownerName}
           </div>
-          <div class="col">
-              ${car.parkingSpot}
+        <div class="col">
+    <img src="${pageContext.request.contextPath}/CarPhoto?id=${car.id}" alt="Car photo" style="width:100px;height:100px;">
           </div>
           <div class="col">
             <c:if test="${pageContext.request.isUserInRole('WRITE_CARS')}">
+                <a class="btn btn-secondary" href="${pageContext.request.contextPath}/AddCarPhoto?id=${car.id}" role="button">Add Photo</a>
               <a class="btn btn-secondary" href="${pageContext.request.contextPath}/EditCar?id=${car.id}">Edit Car</a>
             </c:if>
           </div>

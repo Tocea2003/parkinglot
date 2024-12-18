@@ -1,11 +1,17 @@
 package com.parking.parkinglot1.common;
 
+import com.parking.parkinglot1.entities.CarPhoto;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.OneToOne;
+
 public class CarDto {
     private Long id;
     private String licensePlate;
     private String parkingSpot;
     private String ownerName;
     private String owner; // Add this property
+    private CarPhoto photo; // Add this property
 
     // Constructors
     public CarDto(Long id, String licensePlate, String parkingSpot, String ownerName, String owner) {
@@ -15,6 +21,9 @@ public class CarDto {
         this.ownerName = ownerName;
         this.owner = owner;
     }
+
+
+
 
     // Getters and setters
     public Long getId() {

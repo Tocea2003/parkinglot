@@ -23,7 +23,10 @@ public class UserBean {
     @PersistenceContext
     EntityManager entityManager;
 
-    public List<UserDto> findAllUsers(){
+    @Inject
+    PasswordBean passwordBean;
+
+    public List<UserDto> findAllUsers() {
         LOG.info("Finding all users");
         try {
             TypedQuery<User> typedQuery = entityManager.createQuery("SELECT u FROM User u", User.class);
@@ -46,9 +49,8 @@ public class UserBean {
         }
         return userDtos;
     }
-@Inject PasswordBean passwordBean;
-    public void createUser(String username, String email, String password,
-                           Collection<String> groups) {
+
+    public void createUser(String username, String email, String password, Collection<String> groups) {
         LOG.info("createUser");
         User newUser = new User();
         newUser.setUsername(username);
@@ -57,8 +59,8 @@ public class UserBean {
         entityManager.persist(newUser);
         assignGroupsToUser(username, groups);
     }
-    private void assignGroupsToUser(String username, Collection<String>
-            groups) {
+
+    private void assignGroupsToUser(String username, Collection<String> groups) {
         LOG.info("assignGroupsToUser");
         for (String group : groups) {
             UserGroup userGroup = new UserGroup();
@@ -68,5 +70,10 @@ public class UserBean {
         }
     }
 
-
+    public Collection<String> findUsernamesByUserIds(Collection<Long> userIds) {
+        List<String> usernames = entityManager.createQuery("SELECT u.username FROM User u WHERE u.id IN :userIds", String.class)
+                .setParameter("userIds", userIds)
+                .getResultList();
+        return usernames;
+    }
 }
