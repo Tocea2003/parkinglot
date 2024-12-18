@@ -28,7 +28,7 @@
         <div class="row">
             <div class="col-md-6 mb-3">
                 <h2>Current Photo</h2>
-                <img src="${photoUrl}" alt="Car Photo" style="max-width: 100%; height: auto;">
+                <img src="${photoUrl}" alt="Cars Photo" style="max-width: 100%; height: auto;">
             </div>
         </div>
     </c:if>
