@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-@DeclareRoles({"READ_USERS", "WRITE_USERS"})
+@DeclareRoles({"READ_USERS", "WRITE_USERS", "INVOICING"})
 @ServletSecurity(value = @HttpConstraint(rolesAllowed = {"READ_USERS"}),
         httpMethodConstraints = {@HttpMethodConstraint(value = "POST", rolesAllowed = {"WRITE_USERS"})})
 @WebServlet(name = "Users", value = "/Users")
@@ -25,11 +25,12 @@ public class Users extends HttpServlet {
 
     @Inject
     private InvoiceBean invoiceBean;
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         List<UserDto> users = userBean.findAllUsers();
         request.setAttribute("users", users);
-        if (!invoiceBean.getUserIds().isEmpty()) {
+        if (request.isUserInRole("INVOICING") && !invoiceBean.getUserIds().isEmpty()) {
             Collection<String> usernames = userBean.findUsernamesByUserIds(invoiceBean.getUserIds());
             request.setAttribute("invoices", usernames);
         } else {
@@ -40,13 +41,18 @@ public class Users extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String[] userIdsAsString = request.getParameterValues("user_ids");
-        if (userIdsAsString != null) {
-            List<Long> userIds = new ArrayList<>();
-            for (String userIdAsString : userIdsAsString) {
-                userIds.add(Long.parseLong(userIdAsString));
+        if (request.isUserInRole("INVOICING")) {
+            String[] userIdsAsString = request.getParameterValues("user_ids");
+            if (userIdsAsString != null) {
+                List<Long> userIds = new ArrayList<>();
+                for (String userIdAsString : userIdsAsString) {
+                    userIds.add(Long.parseLong(userIdAsString));
+                }
+                invoiceBean.getUserIds().addAll(userIds);
             }
-            invoiceBean.getUserIds().addAll(userIds);
+        } else {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, "You do not have permission to perform this action.");
+            return;
         }
         response.sendRedirect(request.getContextPath() + "/Users");
     }

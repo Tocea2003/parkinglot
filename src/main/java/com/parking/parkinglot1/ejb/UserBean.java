@@ -76,4 +76,21 @@ public class UserBean {
                 .getResultList();
         return usernames;
     }
+    public User findById(Long userId) {
+        try {
+            return entityManager.find(User.class, userId);
+        } catch (Exception e) {
+            throw new EJBException(e);
+        }
+    }
+
+    public void updateUser(User user) {
+
+
+        try {
+            entityManager.merge(user);
+        } catch (Exception e) {
+            throw new EJBException(e);
+        }
+    }
 }
