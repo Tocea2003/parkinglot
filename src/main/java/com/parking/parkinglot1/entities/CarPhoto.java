@@ -1,28 +1,25 @@
+
 package com.parking.parkinglot1.entities;
 
-import jakarta.persistence.*;
-
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 @Entity
 public class CarPhoto {
+    long id;
+    String filename;
+    String fileType;
+    byte[] fileContent;
+    Car car;
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    private String filename;
-    private String fileType;
-
-    @Lob
-    private byte[] fileContent;
-
-    @OneToOne(mappedBy = "photo")
-    private Car car;
-
-    // Getters and Setters
-    public Long getId() {
+    @GeneratedValue
+    public long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -50,6 +47,7 @@ public class CarPhoto {
         this.fileContent = fileContent;
     }
 
+    @OneToOne
     public Car getCar() {
         return car;
     }

@@ -1,7 +1,7 @@
-package com.parking.parkinglot1;
+package com.parking.parkinglot1.servlets;
 
 import com.parking.parkinglot1.common.CarPhotoDto;
-import com.parking.parkinglot1.ejb.CarsBeans;
+import com.parking.parkinglot1.ejb.CarsBean;
 import jakarta.inject.Inject;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
@@ -10,22 +10,22 @@ import jakarta.servlet.annotation.*;
 import java.io.IOException;
 
 @WebServlet(name = "CarPhotos", value = "/CarPhotos")
-public class CarPhotos extends HttpServlet {
-
+class CarPhotos extends HttpServlet {
     @Inject
-    CarsBeans carsBean;
+    CarsBean carsBean;
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse
+            response) throws ServletException, IOException {
         Integer carId = Integer.parseInt(request.getParameter("id"));
         CarPhotoDto photo = carsBean.findPhotoByCarId(carId);
-        if (photo != null) {
+        if(photo != null) {
             response.setContentType(photo.getFileType());
             response.setContentLength(photo.getFileContent().length);
             response.getOutputStream().write(photo.getFileContent());
-        } else {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND); // Error 404
+        }
+        else {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
         }
     }
 
@@ -34,4 +34,3 @@ public class CarPhotos extends HttpServlet {
             response) throws ServletException, IOException {
     }
 }
-

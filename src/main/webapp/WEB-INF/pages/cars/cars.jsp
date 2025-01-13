@@ -12,24 +12,33 @@
     <div class="container text-center">
       <c:forEach var="car" items="${cars}">
         <div class="row">
-          <div class="col">
-            <input type="checkbox" name="car_ids" value="${car.id}" />
-          </div>
+          <c:if test="${pageContext.request.isUserInRole('WRITE_CARS')}">
+            <div class="col">
+              <input type="checkbox" name="car_ids" value="${car.id}" />
+            </div>
+          </c:if>
           <div class="col">
               ${car.licensePlate}
           </div>
           <div class="col">
               ${car.ownerName}
           </div>
-        <div class="col">
-    <img src="${pageContext.request.contextPath}/CarPhoto?id=${car.id}" alt="Car photo" style="width:100px;height:100px;">
+          <div class="col">
+              ${car.parkingSpot}
           </div>
           <div class="col">
-            <c:if test="${pageContext.request.isUserInRole('WRITE_CARS')}">
-                <a class="btn btn-secondary" href="${pageContext.request.contextPath}/AddCarPhoto?id=${car.id}" role="button">Add Photo</a>
-              <a class="btn btn-secondary" href="${pageContext.request.contextPath}/EditCar?id=${car.id}">Edit Car</a>
-            </c:if>
+            <img src="${pageContext.request.contextPath}/CarPhotos?id=${car.id}" width="48" />
           </div>
+          <c:if test="${pageContext.request.isUserInRole('WRITE_CARS')}">
+            <div class="col">
+              <a class="btn btn-secondary" href="${pageContext.request.contextPath}/AddCarPhoto?id=${car.id}" role="button">Add photo</a>
+            </div>
+            <div class="col">
+              <a class="btn btn-secondary" href="${pageContext.request.contextPath}/EditCar?id=${car.id}">Edit
+                Car</a>
+            </div>
+          </c:if>
+
         </div>
       </c:forEach>
     </div>

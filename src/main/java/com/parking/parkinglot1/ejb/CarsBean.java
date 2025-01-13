@@ -1,6 +1,7 @@
 package com.parking.parkinglot1.ejb;
 
 import com.parking.parkinglot1.common.CarDto;
+import com.parking.parkinglot1.common.CarPhotoDto;
 import com.parking.parkinglot1.entities.Car;
 import com.parking.parkinglot1.entities.CarPhoto;
 import com.parking.parkinglot1.entities.User;
@@ -9,7 +10,7 @@ import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
-import com.parking.parkinglot1.common.CarPhotoDto;
+
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,11 +18,12 @@ import java.util.List;
 import java.util.logging.Logger;
 
 @Stateless
-public class CarsBeans {
-    private static final Logger LOG = Logger.getLogger(CarsBeans.class.getName());
+public class CarsBean {
+    private static final Logger LOG = Logger.getLogger(CarsBean.class.getName());
 
     @PersistenceContext
     EntityManager entityManager;
+
 
     public List<CarDto> findAllCars() {
         LOG.info("findAllCars");
@@ -32,17 +34,17 @@ public class CarsBeans {
         } catch (Exception ex) {
             throw new EJBException(ex);
         }
+
     }
 
     public List<CarDto> copyCarsToDto(List<Car> cars) {
         List<CarDto> carDtos = new ArrayList<>();
-        for (Car car : cars) {
+        for(Car car : cars) {
             CarDto carDto = new CarDto(
                     car.getId(),
                     car.getLicensePlate(),
                     car.getParkingSpot(),
-                    car.getOwner().getUsername(),
-                    car.getOwner().getUsername() // Assuming owner and ownerName are the same
+                    car.getOwner().getUsername()
             );
             carDtos.add(carDto);
         }
@@ -54,7 +56,7 @@ public class CarsBeans {
 
         Car car = new Car();
         car.setLicensePlate(licensePlate);
-        car.setParkingSpot(parkingSpot);
+        car.setParkingSpot(parkingSpot);  // This should be parking spot
 
         User user = entityManager.find(User.class, userId);
         user.getCars().add(car);
@@ -73,9 +75,7 @@ public class CarsBeans {
                 car.getId(),
                 car.getLicensePlate(),
                 car.getParkingSpot(),
-                car.getOwner().getUsername(),
-                car.getOwner().getUsername() // Assuming owner and ownerName are the same
-        );
+                car.getOwner().getUsername() );
     }
 
     public void updateCar(Long carId, String licensePlate, String parkingSpot, Long userId) {
@@ -85,11 +85,11 @@ public class CarsBeans {
         car.setLicensePlate(licensePlate);
         car.setParkingSpot(parkingSpot);
 
-        // Remove this car from old owner
+        //remove this care from old owner
         User oldUser = car.getOwner();
         oldUser.getCars().remove(car);
 
-        // Add the car to its new owner
+        // add the car to its new owner
         User user = entityManager.find(User.class, userId);
         user.getCars().add(car);
         car.setOwner(user);
@@ -97,12 +97,12 @@ public class CarsBeans {
 
     public void deleteCarsByIds(Collection<Long> carIds) {
         LOG.info("deleteCarsByIds");
-        for (Long carId : carIds) {
+
+        for(Long carId : carIds) {
             Car car = entityManager.find(Car.class, carId);
             entityManager.remove(car);
         }
     }
-
     public void addPhotoToCar(Long carId, String filename, String fileType, byte[] fileContent) {
         LOG.info("addPhotoToCar");
         CarPhoto photo = new CarPhoto();
@@ -118,7 +118,8 @@ public class CarsBeans {
         entityManager.persist(photo);
     }
     public CarPhotoDto findPhotoByCarId(Integer carId) {
-        List<CarPhoto> photos = entityManager.createQuery("SELECT p FROM CarPhoto p where p.car.id = :id", CarPhoto.class)
+        List<CarPhoto> photos = entityManager
+                .createQuery("SELECT p FROM CarPhoto p where p.car.id = :id", CarPhoto.class)
                 .setParameter("id", carId)
                 .getResultList();
         if (photos.isEmpty()) {
@@ -128,7 +129,5 @@ public class CarsBeans {
         return new CarPhotoDto(photo.getId(), photo.getFilename(), photo.getFileType(),
                 photo.getFileContent());
     }
-
-
 
 }

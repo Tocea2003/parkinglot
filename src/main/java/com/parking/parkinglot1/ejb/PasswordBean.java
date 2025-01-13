@@ -22,7 +22,9 @@ public class PasswordBean {
             for (int i = 0; i < digest.length; i++) {
                 final String hex = Integer.toHexString(0xff &
                         digest[i]);
-                if (hex.length() == 1) {hexString.append('0');
+                if (hex.length() == 1) {
+
+                    hexString.append('0');
                 }
                 hexString.append(hex);
             }

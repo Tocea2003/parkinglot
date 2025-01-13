@@ -1,6 +1,7 @@
 package com.parking.parkinglot1.ejb;
 
 import com.parking.parkinglot1.common.UserDto;
+import com.parking.parkinglot1.entities.Car;
 import com.parking.parkinglot1.entities.User;
 import com.parking.parkinglot1.entities.UserGroup;
 import jakarta.ejb.EJBException;
@@ -17,39 +18,37 @@ import java.util.logging.Logger;
 
 @Stateless
 public class UserBean {
-
     private static final Logger LOG = Logger.getLogger(UserBean.class.getName());
 
     @PersistenceContext
     EntityManager entityManager;
 
-    @Inject
-    PasswordBean passwordBean;
-
     public List<UserDto> findAllUsers() {
-        LOG.info("Finding all users");
+        LOG.info("findAllUsers");
         try {
             TypedQuery<User> typedQuery = entityManager.createQuery("SELECT u FROM User u", User.class);
             List<User> users = typedQuery.getResultList();
             return copyUsersToDto(users);
-        } catch (Exception e) {
-            throw new EJBException(e);
+        } catch (Exception ex) {
+            throw new EJBException(ex);
         }
     }
 
-    private List<UserDto> copyUsersToDto(List<User> users) {
+    public List<UserDto> copyUsersToDto(List<User> usersList) {
         List<UserDto> userDtos = new ArrayList<>();
-        for (User user : users) {
+        for (User user : usersList) {
             UserDto userDto = new UserDto(
-                    user.getId(),
-                    user.getUsername(),
-                    user.getEmail()
+                    user.getUsername(), // Username from Users entity
+                    user.getEmail(),   // Email from Users entity
+                    user.getId()
             );
             userDtos.add(userDto);
         }
         return userDtos;
     }
 
+    @Inject
+    PasswordBean passwordBean;
     public void createUser(String username, String email, String password, Collection<String> groups) {
         LOG.info("createUser");
         User newUser = new User();
@@ -59,8 +58,8 @@ public class UserBean {
         entityManager.persist(newUser);
         assignGroupsToUser(username, groups);
     }
-
-    private void assignGroupsToUser(String username, Collection<String> groups) {
+    private void assignGroupsToUser(String username, Collection<String>
+            groups) {
         LOG.info("assignGroupsToUser");
         for (String group : groups) {
             UserGroup userGroup = new UserGroup();
@@ -70,27 +69,29 @@ public class UserBean {
         }
     }
 
-    public Collection<String> findUsernamesByUserIds(Collection<Long> userIds) {
-        List<String> usernames = entityManager.createQuery("SELECT u.username FROM User u WHERE u.id IN :userIds", String.class)
-                .setParameter("userIds", userIds)
-                .getResultList();
+    public Collection<String> findUseernameByUserIds (Collection<Long> userIds) {
+        List<String> usernames =
+                entityManager.createQuery("SELECT u.username FROM User u WHERE u.id IN :userIds", String.class)
+                        .setParameter("userIds",userIds)
+                        .getResultList();
         return usernames;
     }
-    public User findById(Long userId) {
-        try {
-            return entityManager.find(User.class, userId);
-        } catch (Exception e) {
-            throw new EJBException(e);
+
+    public UserDto findById(Long userId) {
+
+        User user = entityManager.find(User.class, userId);
+
+        if (user == null) {
+            return null;
         }
+
+        return new UserDto(user.getUsername(), user.getEmail(), user.getId());
     }
 
-    public void updateUser(User user) {
-
-
-        try {
-            entityManager.merge(user);
-        } catch (Exception e) {
-            throw new EJBException(e);
-        }
+    public void updateUser(Long userId, String username, String email) {
+        LOG.info("updateUser");
+        User user = entityManager.find(User.class, userId);
+        user.setUsername(username);
+        user.setEmail(email);
     }
 }

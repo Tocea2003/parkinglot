@@ -1,24 +1,23 @@
 package com.parking.parkinglot1.common;
 
-public class CarPhotoDto
-{
-    private Long id;
+public class CarPhotoDto {
+    private long id;
     private String filename;
     private String fileType;
     private byte[] fileContent;
 
-    public CarPhotoDto(Long id, String filename, String fileType, byte[] fileContent) {
+    public CarPhotoDto(long id, String filename, String fileType, byte[] fileContent) {
         this.id = id;
         this.filename = filename;
         this.fileType = fileType;
         this.fileContent = fileContent;
     }
 
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -45,6 +44,4 @@ public class CarPhotoDto
     public void setFileContent(byte[] fileContent) {
         this.fileContent = fileContent;
     }
-
 }
-
