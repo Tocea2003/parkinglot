@@ -2,6 +2,10 @@
 <%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
+<c:if test="${pageContext.request.remoteUser == null}">
+    <c:redirect url="${pageContext.request.contextPath}/Login" />
+</c:if>
+
 <t:pageTemplate pageTitle="Edit User">
     <h1>Edit User</h1>
     <form class="needs-validation" novalidate method="post" action="${pageContext.request.contextPath}/EditUser">
@@ -28,5 +32,4 @@
         <input type="hidden" name="user_id" value="${user.id}" />
         <button class="btn btn-primary btn-lg" type="submit">Save</button>
     </form>
-
 </t:pageTemplate>

@@ -34,11 +34,9 @@
               <a class="btn btn-secondary" href="${pageContext.request.contextPath}/AddCarPhoto?id=${car.id}" role="button">Add photo</a>
             </div>
             <div class="col">
-              <a class="btn btn-secondary" href="${pageContext.request.contextPath}/EditCar?id=${car.id}">Edit
-                Car</a>
+              <a class="btn btn-secondary" href="${pageContext.request.contextPath}/EditCar?id=${car.id}">Edit Car</a>
             </div>
           </c:if>
-
         </div>
       </c:forEach>
     </div>

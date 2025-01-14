@@ -94,4 +94,9 @@ public class UserBean {
         user.setUsername(username);
         user.setEmail(email);
     }
+
+    public List<User> findAllUsersWithCars() {
+        TypedQuery<User> query = entityManager.createQuery("SELECT u FROM User u LEFT JOIN FETCH u.cars", User.class);
+        return query.getResultList();
+    }
 }

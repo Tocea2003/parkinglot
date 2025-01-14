@@ -3,7 +3,6 @@ package com.parking.parkinglot1.servlets.users;
 import com.parking.parkinglot1.common.UserDto;
 import com.parking.parkinglot1.ejb.InvoiceBean;
 import com.parking.parkinglot1.ejb.UserBean;
-import jakarta.annotation.security.DeclareRoles;
 import jakarta.inject.Inject;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
@@ -13,21 +12,27 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-@DeclareRoles({"READ_CARS", "WRITE_CARS", "INVOICING"})
+
 @WebServlet(name = "Users", value = "/Users")
-@ServletSecurity(
-        value = @HttpConstraint(rolesAllowed = {"READ_USERS"}),
-        httpMethodConstraints = {
-                @HttpMethodConstraint(value = "POST", rolesAllowed = {"WRITE_USERS"})
-        }
-)
+@ServletSecurity(@HttpConstraint(rolesAllowed = {"read", "write"}))
 public class Users extends HttpServlet {
+    @Inject
+    UserBean userBean;
+
+    @Inject
+    InvoiceBean invoiceBean;
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        if (request.getRemoteUser() == null) {
+            response.sendRedirect(request.getContextPath() + "/Login");
+            return;
+        }
+
         List<UserDto> users = userBean.findAllUsers();
         request.setAttribute("users", users);
 
-        if(!invoiceBean.getUserIds().isEmpty()) {
+        if (!invoiceBean.getUserIds().isEmpty()) {
             Collection<String> usernames = userBean.findUseernameByUserIds(invoiceBean.getUserIds());
             request.setAttribute("invoices", usernames);
         }
@@ -36,21 +41,20 @@ public class Users extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse
-            response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        if (request.getRemoteUser() == null) {
+            response.sendRedirect(request.getContextPath() + "/Login");
+            return;
+        }
+
         String[] userIdsAsString = request.getParameterValues("user_ids");
-        if(userIdsAsString != null) {
+        if (userIdsAsString != null) {
             List<Long> userIds = new ArrayList<>();
-            for(String userIdAsString : userIdsAsString) {
+            for (String userIdAsString : userIdsAsString) {
                 userIds.add(Long.parseLong(userIdAsString));
             }
             invoiceBean.getUserIds().addAll(userIds);
         }
         response.sendRedirect(request.getContextPath() + "/Users");
     }
-    @Inject
-    UserBean userBean;
-
-    @Inject
-    InvoiceBean invoiceBean;
 }
